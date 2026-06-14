@@ -1,0 +1,219 @@
+/* VenueMap.css
+   Member 4 — Venue Map & Rescue Routing
+   ---------------------------------------------------------------
+   Design tokens mirror the dashboard-wide system Member 3 owns
+   (index.css): dark control-room background, status colors
+   safe/warning/emergency, Inter for UI text + JetBrains Mono for
+   data/coordinates. Tokens are redeclared with safe fallbacks here
+   so this component still looks correct if it's previewed before
+   index.css lands.
+*/
+
+.venue-map {
+  --nw-bg: var(--bg, #0c1018);
+  --nw-panel: var(--panel, #141a26);
+  --nw-border: var(--border, #232b3a);
+  --nw-text: var(--text, #e7ecf3);
+  --nw-text-dim: var(--text-dim, #8694a8);
+  --nw-safe: var(--safe, #36d399);
+  --nw-warning: var(--warning, #ffb84d);
+  --nw-emergency: var(--emergency, #ff4d5e);
+  --nw-grid-line: #1d2433;
+
+  background: var(--nw-panel);
+  border: 1px solid var(--nw-border);
+  border-radius: 14px;
+  padding: 18px;
+  color: var(--nw-text);
+  font-family: "Inter", system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.venue-map__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.venue-map__title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.venue-map__subtitle {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--nw-text-dim);
+}
+
+.venue-map__stage {
+  width: 100%;
+  display: block;
+}
+
+/* base zone cell */
+.zone-cell {
+  stroke: var(--nw-grid-line);
+  stroke-width: 1;
+  transition: fill 0.4s ease;
+}
+
+/* landmark overlays */
+.landmark-outline {
+  fill: none;
+  stroke: rgba(231, 236, 243, 0.35);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+  pointer-events: none;
+}
+
+.landmark-label {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  fill: rgba(231, 236, 243, 0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+}
+
+.zone-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 8px;
+  fill: rgba(231, 236, 243, 0.35);
+  pointer-events: none;
+}
+
+/* danger pulse on the highest-risk zone(s) */
+.zone-danger {
+  stroke: var(--nw-emergency);
+  stroke-width: 2.5;
+  animation: zonePulse 1.4s ease-in-out infinite;
+}
+
+@keyframes zonePulse {
+  0%, 100% {
+    stroke-opacity: 1;
+    filter: drop-shadow(0 0 2px var(--nw-emergency));
+  }
+  50% {
+    stroke-opacity: 0.35;
+    filter: drop-shadow(0 0 9px var(--nw-emergency));
+  }
+}
+
+/* gates */
+.gate {
+  fill: var(--nw-safe);
+  stroke: var(--nw-grid-line);
+  stroke-width: 1;
+  transition: fill 0.3s ease;
+}
+
+.gate--closed {
+  fill: var(--nw-emergency);
+}
+
+.gate-label {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  fill: var(--nw-text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gate-sublabel {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 8px;
+  fill: var(--nw-text-dim);
+}
+
+/* rescue route animation */
+.rescue-route {
+  fill: none;
+  stroke: var(--nw-emergency);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 8 6;
+  animation: routeMarch 1s linear infinite, fadeIn 0.5s ease;
+  filter: drop-shadow(0 0 4px rgba(255, 77, 94, 0.55));
+}
+
+@keyframes routeMarch {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.rescue-route-arrow {
+  fill: var(--nw-emergency);
+}
+
+/* legend */
+.venue-map__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--nw-text-dim);
+}
+
+.venue-map__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.venue-map__legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.venue-map__legend-gradient {
+  width: 64px;
+  height: 10px;
+  border-radius: 3px;
+  background: linear-gradient(to right, #1d4ed8, #facc15, #ef4444);
+  display: inline-block;
+}
+
+.venue-map__connection {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.venue-map__connection-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--nw-text-dim);
+}
+
+.venue-map__connection-dot--live {
+  background: var(--nw-safe);
+  animation: blink 1.6s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
